@@ -2,8 +2,10 @@ package common;
 
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Scanner;
 
 import util.ScriptsHandler;
 
@@ -85,16 +87,26 @@ public class ScriptManager implements ScriptsHandler {
 	}
 
 	@Override
-	public String readTmpFile() {
-		// TODO Auto-generated method stub
-		return null;
+	public String readTmpFile() throws FileNotFoundException {
+		file = new File(TMPFILE);
+		String content = extracted().useDelimiter("\\Z").next();
+		return content;
+	}
+
+	private Scanner extracted() throws FileNotFoundException {
+		return new Scanner(file);
 	}
 
 	/**
 	 * @param args
+	 * @throws IOException 
+	 * @throws InterruptedException 
 	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	public static void main(String[] args) throws IOException, InterruptedException {
+		ScriptManager scm = new ScriptManager();
+		scm.createBatFile();
+		scm.createShFile();
+		scm.executeBat();	
 
 	}
 
