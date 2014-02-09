@@ -2,7 +2,6 @@ package common;
 
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -71,8 +70,17 @@ public class ScriptManager implements ScriptsHandler {
 	}
 
 	@Override
-	public void executeBat() {
-		// TODO Auto-generated method stub
+	public void executeBat() throws IOException, InterruptedException {
+		String cmd="cmd /c start /wait " + BATFILE; 
+		Runtime r=Runtime.getRuntime(); 
+		Process pr=r.exec(cmd); 
+		int exitVal= pr.waitFor();
+		System.out.println("ExitCode = " +exitVal);
+		file = new File(TMPFILE);
+		if(file.exists()){
+			System.out.println("Passed ExitCode = " + readTmpFile());
+		}
+		
 
 	}
 
