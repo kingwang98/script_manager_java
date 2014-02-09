@@ -30,10 +30,10 @@ public class ScriptManager implements ScriptsHandler {
 		file = new File(BATFILE);
 		fos = new FileOutputStream(file);
 		dos = new DataOutputStream(fos);
-		String cmd1 = "C:\\\"Program Files (x86)\"\\Git\\bin\\sh.exe --login -i"
+		String cmd1 = "C:\\\"Program Files (x86)\"\\Git\\bin\\sh.exe --login -i "
 				+ BATFILE;
-		String cmd2 = "set /p ExitCode=<" + TMPFILE;
-		String cmd3 = "echo ExitCode = %ExitCode%";
+		String cmd2 = "set /p ExitCode=<" +"\""+ TMPFILE +"\"";
+		String cmd3 = "echo \"ExitCode = %ExitCode%\"";
 		String cmd4 = "exit /b %ExitCode%";
 
 		dos.writeBytes("@echo off\n");
@@ -52,7 +52,7 @@ public class ScriptManager implements ScriptsHandler {
 		String cmd1 = "retval=`ls non_existent_file &> /dev/null  ; echo $?`";
 
 		String cmd2 = "echo \"retval=$retval\"";
-		String cmd3 = "tmpfile=" + TMPFILE;
+		String cmd3 = "tmpfile=" + "\""+ TMPFILE + "\"";
 		String cmd4 = "if [ -f $tmpfile ] ; then";
 		String cmd5 = "rm -rf $tmpfile";
 		String cmd6 = "fi";
