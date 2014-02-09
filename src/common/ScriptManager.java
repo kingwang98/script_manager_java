@@ -1,5 +1,7 @@
 package common;
 
+import interfaces.ScriptsHandler;
+
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Scanner;
 
-import util.ScriptsHandler;
 
 public class ScriptManager implements ScriptsHandler {
 
@@ -15,6 +16,7 @@ public class ScriptManager implements ScriptsHandler {
 	private final String TMPFILE = TMP1DIR + "\\tmp.txt";
 	private final String BATFILE = TMP1DIR + "\\gb.bat";
 	private final String SHFILE = TMP1DIR + "\\mos.sh";
+	private final String SHFILE1 = TMP1DIR + "\\example.sh";
 	private File file = new File(TMP1DIR);
 	private FileOutputStream fos;
 	private DataOutputStream dos;
@@ -30,13 +32,16 @@ public class ScriptManager implements ScriptsHandler {
 		file = new File(BATFILE);
 		fos = new FileOutputStream(file);
 		dos = new DataOutputStream(fos);
+		String cmd = "@ECHO OFF";
 		String cmd1 = "C:\\\"Program Files (x86)\"\\Git\\bin\\sh.exe --login -i "
-				+ BATFILE;
-		String cmd2 = "set /p ExitCode=<" +"\""+ TMPFILE +"\"";
+				+ SHFILE;
+		// String cmd2 = "set /p ExitCode=<" +"\""+ TMPFILE +"\"";
+		String cmd2 = "set  ExitCode=%ERRORLEVEL%";
 		String cmd3 = "echo \"ExitCode = %ExitCode%\"";
+		// String cmd4 = "cmd /c exit /b %ExitCode%";
 		String cmd4 = "exit /b %ExitCode%";
 
-		dos.writeBytes("@echo off\n");
+		dos.writeBytes(cmd + "\n");
 		dos.writeBytes(cmd1 + "\n");
 		dos.writeBytes(cmd2 + "\n");
 		dos.writeBytes(cmd3 + "\n");
@@ -49,41 +54,44 @@ public class ScriptManager implements ScriptsHandler {
 		file = new File(SHFILE);
 		fos = new FileOutputStream(file);
 		dos = new DataOutputStream(fos);
-		String cmd1 = "retval=`ls non_existent_file &> /dev/null  ; echo $?`";
-
-		String cmd2 = "echo \"retval=$retval\"";
-		String cmd3 = "tmpfile=" + "\""+ TMPFILE + "\"";
-		String cmd4 = "if [ -f $tmpfile ] ; then";
-		String cmd5 = "rm -rf $tmpfile";
-		String cmd6 = "fi";
-		String cmd7 = "touch $tmpfile";
-		String cmd8 = "echo \"$retval\" >> $tmpfile";
+		// String cmd1 =
+		// "retval=`ls non_existent_file &> /dev/null  ; echo $?`";
+		String cmd1 = "exit $(G:\\\\tmp1\\\\example.sh)";
+		// String cmd2 = "exit $?";
+		// String cmd3 = "tmpfile=" + "\""+ TMPFILE + "\"";
+		// String cmd4 = "if [ -f $tmpfile ] ; then";
+		// String cmd5 = "rm -rf $tmpfile";
+		// String cmd6 = "fi";
+		// String cmd7 = "touch $tmpfile";
+		// String cmd8 = "echo \"$retval\" >> $tmpfile";
 
 		dos.writeBytes("#!/bin/bash\n");
 		dos.writeBytes(cmd1 + "\n");
+		// Create an example shell script to return exit 42
+		file = new File(SHFILE1);
+		fos = new FileOutputStream(file);
+		dos = new DataOutputStream(fos);
+
+		dos.writeBytes("#!/bin/bash\n");
+		cmd1 = "retval=42";
+		String cmd2 = "echo $retval";
+		String cmd3 = "exit $retval";
+		dos.writeBytes(cmd1 + "\n");
 		dos.writeBytes(cmd2 + "\n");
 		dos.writeBytes(cmd3 + "\n");
-		dos.writeBytes(cmd4 + "\n");
-		dos.writeBytes(cmd5 + "\n");
-		dos.writeBytes(cmd6 + "\n");
-		dos.writeBytes(cmd7 + "\n");
-		dos.writeBytes(cmd8 + "\n");
 
 	}
 
 	@Override
 	public void executeBat() throws IOException, InterruptedException {
-		String cmd="cmd /c start /wait " + BATFILE; 
-		Runtime r=Runtime.getRuntime(); 
-		Process pr=r.exec(cmd); 
-		int exitVal= pr.waitFor();
-		System.out.println("ExitCode = " +exitVal);
-		file = new File(TMPFILE);
-		if(file.exists()){
-			System.out.println("Passed ExitCode = " + readTmpFile());
-		}
-		
-
+		// This will enable a window show the bat execution
+		// String cmd="cmd /c start /wait " + BATFILE;
+		// This will enable java get the exit code
+		String cmd = "cmd /c " + BATFILE;
+		Runtime r = Runtime.getRuntime();
+		Process pr = r.exec(cmd);
+		int exitVal = pr.waitFor();
+		System.out.println("ExitCode passing from child process = " + exitVal);
 	}
 
 	@Override
@@ -99,14 +107,15 @@ public class ScriptManager implements ScriptsHandler {
 
 	/**
 	 * @param args
-	 * @throws IOException 
-	 * @throws InterruptedException 
+	 * @throws IOException
+	 * @throws InterruptedException
 	 */
-	public static void main(String[] args) throws IOException, InterruptedException {
+	public static void main(String[] args) throws IOException,
+			InterruptedException {
 		ScriptManager scm = new ScriptManager();
 		scm.createBatFile();
 		scm.createShFile();
-		scm.executeBat();	
+		scm.executeBat();
 
 	}
 
